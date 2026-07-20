@@ -134,38 +134,38 @@
         <div class="match-board-scroll">
           <div class="match-board">
 
-            <section class="match-area">
-              <h3 class="visually-hidden">
-                Left matching items
-              </h3>
+            <div class="match-board">
+  <div class="unmatched-grid">
+    <section class="match-area">
+      <h3 class="visually-hidden">
+        Left matching items
+      </h3>
 
-              <div
-                class="match-column left-column"
-                aria-label="Left matching items"
-              ></div>
-            </section>
+      <div
+        class="match-column left-column"
+        aria-label="Left matching items"
+      ></div>
+    </section>
 
-            <section
-              class="connected-area"
-              aria-label="Connected pairs"
-            >
-              <p class="connected-placeholder">
-                Your matched pairs will appear here.
-              </p>
+    <section class="match-area">
+      <h3 class="visually-hidden">
+        Right matching items
+      </h3>
 
-              <div class="connected-pairs"></div>
-            </section>
+      <div
+        class="match-column right-column"
+        aria-label="Right matching items"
+      ></div>
+    </section>
+  </div>
 
-            <section class="match-area">
-              <h3 class="visually-hidden">
-                Right matching items
-              </h3>
-
-              <div
-                class="match-column right-column"
-                aria-label="Right matching items"
-              ></div>
-            </section>
+  <section
+    class="matched-area"
+    aria-label="Matched pairs"
+  >
+    <div class="matched-pairs"></div>
+  </section>
+</div>
 
           </div>
         </div>
