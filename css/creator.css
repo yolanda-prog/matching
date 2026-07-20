@@ -14,7 +14,9 @@
   position: sticky;
   top: 18px;
 }
-
+.site-header {
+  justify-content: flex-start;
+}
 /* Main labels */
 
 .creator-panel > label,
