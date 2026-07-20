@@ -9,10 +9,26 @@
     allowRetry: true,
     allowSolution: true,
     pairs: [
-      { id: '1', left: { text: '1' }, right: { text: 'one' } },
-      { id: '2', left: { text: '2' }, right: { text: 'two' } },
-      { id: '3', left: { text: '3' }, right: { text: 'three' } },
-      { id: '4', left: { text: '4' }, right: { text: 'four' } }
+      {
+        id: '1',
+        left: { text: '1' },
+        right: { text: 'one' }
+      },
+      {
+        id: '2',
+        left: { text: '2' },
+        right: { text: 'two' }
+      },
+      {
+        id: '3',
+        left: { text: '3' },
+        right: { text: 'three' }
+      },
+      {
+        id: '4',
+        left: { text: '4' },
+        right: { text: 'four' }
+      }
     ]
   };
 
@@ -72,8 +88,8 @@
           src="${escapeHtml(item.image)}"
           alt="${escapeHtml(
             item.alt ||
-            item.text ||
-            'Matching item image'
+              item.text ||
+              'Matching item image'
           )}"
         >
       `
@@ -105,6 +121,7 @@
       this.selected = null;
       this.dragged = null;
       this.hasChecked = false;
+      this.pointerDrag = null;
 
       this.render();
     }
@@ -134,38 +151,36 @@
         <div class="match-board-scroll">
           <div class="match-board">
 
-            <div class="match-board">
-  <div class="unmatched-grid">
-    <section class="match-area">
-      <h3 class="visually-hidden">
-        Left matching items
-      </h3>
+            <div class="unmatched-grid">
+              <section class="match-area">
+                <h3 class="visually-hidden">
+                  Left matching items
+                </h3>
 
-      <div
-        class="match-column left-column"
-        aria-label="Left matching items"
-      ></div>
-    </section>
+                <div
+                  class="match-column left-column"
+                  aria-label="Left matching items"
+                ></div>
+              </section>
 
-    <section class="match-area">
-      <h3 class="visually-hidden">
-        Right matching items
-      </h3>
+              <section class="match-area">
+                <h3 class="visually-hidden">
+                  Right matching items
+                </h3>
 
-      <div
-        class="match-column right-column"
-        aria-label="Right matching items"
-      ></div>
-    </section>
-  </div>
+                <div
+                  class="match-column right-column"
+                  aria-label="Right matching items"
+                ></div>
+              </section>
+            </div>
 
-  <section
-    class="matched-area"
-    aria-label="Matched pairs"
-  >
-    <div class="matched-pairs"></div>
-  </section>
-</div>
+            <section
+              class="matched-area"
+              aria-label="Matched pairs"
+            >
+              <div class="matched-pairs"></div>
+            </section>
 
           </div>
         </div>
@@ -177,7 +192,6 @@
         ></p>
 
         <div class="activity-actions">
-
           <button
             class="button check-button"
             type="button"
@@ -205,7 +219,6 @@
           >
             Retry
           </button>
-
         </div>
       `;
 
@@ -220,13 +233,11 @@
       const rightColumn =
         this.root.querySelector('.right-column');
 
-      const connectedPairs =
-        this.root.querySelector('.connected-pairs');
+      const matchedPairs =
+        this.root.querySelector('.matched-pairs');
 
-      const placeholder =
-        this.root.querySelector(
-          '.connected-placeholder'
-        );
+      const matchedArea =
+        this.root.querySelector('.matched-area');
 
       const usedLeft = new Set(
         this.engine.matches.map(
@@ -260,22 +271,22 @@
         )
         .join('');
 
-      connectedPairs.innerHTML =
+      matchedPairs.innerHTML =
         this.engine.matches
           .map(
             (match, index) =>
-              this.connectedPairMarkup(
+              this.matchedPairMarkup(
                 match,
                 index
               )
           )
           .join('');
 
-      placeholder.hidden =
-        this.engine.matches.length > 0;
+      matchedArea.hidden =
+        this.engine.matches.length === 0;
 
       this.bindItems();
-      this.bindConnectedPairs();
+      this.bindMatchedPairs();
     }
 
     itemButton(side, entry) {
@@ -284,7 +295,7 @@
           class="match-item"
           type="button"
           draggable="true"
-          data-side="${side}"
+          data-side="${escapeHtml(side)}"
           data-pair-id="${escapeHtml(
             entry.pairId
           )}"
@@ -295,7 +306,7 @@
       `;
     }
 
-    connectedPairMarkup(match, index) {
+    matchedPairMarkup(match, index) {
       const leftItem =
         this.engine.item(
           'left',
@@ -321,12 +332,12 @@
         this.hasChecked;
 
       const label = locked
-        ? 'Connected matching pair'
-        : 'Connected pair. Select to separate it.';
+        ? 'Matched pair'
+        : 'Matched pair. Select to separate it.';
 
       return `
         <button
-          class="connected-pair ${
+          class="matched-pair ${
             locked ? 'locked' : ''
           }"
           type="button"
@@ -337,14 +348,14 @@
           data-right-pair-id="${escapeHtml(
             match.rightPairId
           )}"
-          aria-label="${label}"
+          aria-label="${escapeHtml(label)}"
           ${locked ? 'disabled' : ''}
         >
-          <span class="puzzle-half puzzle-left">
+          <span class="matched-half matched-left">
             ${itemMarkup(leftItem)}
           </span>
 
-          <span class="puzzle-half puzzle-right">
+          <span class="matched-half matched-right">
             ${itemMarkup(rightItem)}
           </span>
         </button>
@@ -358,19 +369,6 @@
           element.addEventListener(
             'click',
             () => this.select(element)
-          );
-
-          element.addEventListener(
-            'keydown',
-            (event) => {
-              if (
-                event.key === 'Enter' ||
-                event.key === ' '
-              ) {
-                event.preventDefault();
-                this.select(element);
-              }
-            }
           );
 
           element.addEventListener(
@@ -412,10 +410,10 @@
         });
     }
 
-    bindConnectedPairs() {
+    bindMatchedPairs() {
       this.root
         .querySelectorAll(
-          '.connected-pair:not(.locked)'
+          '.matched-pair:not(.locked)'
         )
         .forEach((element) => {
           element.addEventListener(
@@ -446,6 +444,9 @@
           element.dataset.side
       ) {
         event.preventDefault();
+
+        event.dataTransfer.dropEffect =
+          'move';
 
         element.classList.add('drag-over');
       }
@@ -601,6 +602,10 @@
     }
 
     select(element) {
+      if (this.hasChecked) {
+        return;
+      }
+
       if (!this.selected) {
         this.selected = element;
 
@@ -611,11 +616,20 @@
           'true'
         );
 
+        this.setStatus(
+          'Item selected. Choose an item from the other column.'
+        );
+
         return;
       }
 
       if (this.selected === element) {
         this.clearSelection();
+
+        this.setStatus(
+          'Selection cleared.'
+        );
+
         return;
       }
 
@@ -632,6 +646,10 @@
         element.setAttribute(
           'aria-pressed',
           'true'
+        );
+
+        this.setStatus(
+          'New item selected. Choose an item from the other column.'
         );
 
         return;
@@ -669,14 +687,20 @@
           ? first
           : second;
 
+      if (!left || !right) {
+        return;
+      }
+
+      if (
+        left.dataset.side !== 'left' ||
+        right.dataset.side !== 'right'
+      ) {
+        return;
+      }
+
       const isCorrect =
         left.dataset.pairId ===
         right.dataset.pairId;
-
-      const status =
-        this.root.querySelector(
-          '.status-message'
-        );
 
       this.clearSelection();
 
@@ -688,8 +712,9 @@
         left.classList.add('flash-wrong');
         right.classList.add('flash-wrong');
 
-        status.textContent =
-          'Not quite. Try again.';
+        this.setStatus(
+          'Not quite. Try again.'
+        );
 
         window.setTimeout(() => {
           left.classList.remove(
@@ -700,7 +725,7 @@
             'flash-wrong'
           );
 
-          status.textContent = '';
+          this.setStatus('');
         }, 850);
 
         return;
@@ -719,10 +744,11 @@
         this.activity.feedbackMode ===
         'instant'
       ) {
-        status.textContent = 'Correct.';
+        this.setStatus('Correct.');
       } else {
-        status.textContent =
-          'Pair connected. Select the connected pair to change it.';
+        this.setStatus(
+          'Pair matched. Select the joined pair to separate it.'
+        );
       }
 
       this.drawBoard();
@@ -740,8 +766,9 @@
             450
           );
         } else {
-          status.textContent =
-            'All pairs are connected. Select Check.';
+          this.setStatus(
+            'All pairs are matched. Select Check.'
+          );
         }
       }
     }
@@ -775,10 +802,9 @@
       this.clearSelection();
       this.drawBoard();
 
-      this.root.querySelector(
-        '.status-message'
-      ).textContent =
-        'Pair separated. Choose another match.';
+      this.setStatus(
+        'Pair separated. Choose another match.'
+      );
     }
 
     bindActions() {
@@ -792,10 +818,9 @@
           'click',
           () => {
             if (!this.engine.isComplete()) {
-              this.root.querySelector(
-                '.status-message'
-              ).textContent =
-                'Connect all items before checking.';
+              this.setStatus(
+                'Match all items before checking.'
+              );
 
               return;
             }
@@ -809,26 +834,44 @@
         );
       }
 
-      this.root
-        .querySelector('.solution-button')
-        .addEventListener('click', () => {
-          this.hasChecked = true;
+      const solutionButton =
+        this.root.querySelector(
+          '.solution-button'
+        );
 
-          this.showResults(
-            this.engine.solution(),
-            true
-          );
-        });
+      if (solutionButton) {
+        solutionButton.addEventListener(
+          'click',
+          () => {
+            this.hasChecked = true;
 
-      this.root
-        .querySelector('.retry-button')
-        .addEventListener('click', () => {
-          this.engine.reset();
-          this.selected = null;
-          this.dragged = null;
-          this.hasChecked = false;
-          this.render();
-        });
+            this.showResults(
+              this.engine.solution(),
+              true
+            );
+          }
+        );
+      }
+
+      const retryButton =
+        this.root.querySelector(
+          '.retry-button'
+        );
+
+      if (retryButton) {
+        retryButton.addEventListener(
+          'click',
+          () => {
+            this.engine.reset();
+            this.selected = null;
+            this.dragged = null;
+            this.hasChecked = false;
+            this.pointerDrag = null;
+
+            this.render();
+          }
+        );
+      }
     }
 
     showResults(
@@ -906,6 +949,10 @@
           '.match-board-scroll'
         );
 
+      if (!boardScroll) {
+        return;
+      }
+
       boardScroll.outerHTML = `
         <div class="results-list">
           ${rows}
@@ -932,11 +979,11 @@
         </div>
       `;
 
-      this.root.querySelector(
-        '.status-message'
-      ).textContent = showingSolution
-        ? 'Solution shown.'
-        : `${score} out of ${maximum} correct.`;
+      this.setStatus(
+        showingSolution
+          ? 'Solution shown.'
+          : `${score} out of ${maximum} correct.`
+      );
 
       const checkButton =
         this.root.querySelector(
@@ -947,14 +994,35 @@
         checkButton.hidden = true;
       }
 
-      this.root.querySelector(
-        '.solution-button'
-      ).hidden = true;
+      const solutionButton =
+        this.root.querySelector(
+          '.solution-button'
+        );
 
-      this.root.querySelector(
-        '.retry-button'
-      ).hidden =
-        !this.activity.allowRetry;
+      if (solutionButton) {
+        solutionButton.hidden = true;
+      }
+
+      const retryButton =
+        this.root.querySelector(
+          '.retry-button'
+        );
+
+      if (retryButton) {
+        retryButton.hidden =
+          !this.activity.allowRetry;
+      }
+    }
+
+    setStatus(message) {
+      const status =
+        this.root.querySelector(
+          '.status-message'
+        );
+
+      if (status) {
+        status.textContent = message;
+      }
     }
   }
 
