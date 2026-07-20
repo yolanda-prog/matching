@@ -14,7 +14,6 @@
   const previewRoot = $('#previewRoot');
 
   let pairs = [];
-  let dragIndex = null;
   let lastFocusedElement = null;
 
   function newPair(left = '', right = '') {
@@ -197,29 +196,7 @@
         });
       }
 
-      node.addEventListener('dragstart', () => {
-        dragIndex = index;
-        node.classList.add('dragging');
-      });
 
-      node.addEventListener('dragend', () => {
-        node.classList.remove('dragging');
-        dragIndex = null;
-      });
-
-      node.addEventListener('dragover', (event) => {
-        event.preventDefault();
-      });
-
-      node.addEventListener('drop', (event) => {
-        event.preventDefault();
-
-        if (dragIndex !== null && dragIndex !== index) {
-          move(dragIndex, index);
-        }
-
-        dragIndex = null;
-      });
 
       list.appendChild(node);
     });
