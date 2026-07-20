@@ -52,9 +52,9 @@
     bind();
 
     pairs = [
-      newPair('Smeagol', 'Gollum'),
-      newPair('Frodo', 'Mr. Underhill'),
-      newPair('Gandalf', 'Mithrandir')
+newPair('1', 'one'),
+  newPair('2', 'two'),
+  newPair('3', 'three')
     ];
 
     renderPairs();
