@@ -1,11 +1,8 @@
 .creator-layout {
-  width: min(1500px, calc(100% - 32px));
-  margin: 34px auto 60px;
-
-  display: grid;
-  grid-template-columns: minmax(430px, 620px) minmax(420px, 1fr);
-  gap: 28px;
-  align-items: start;
+  display: block;
+  width: calc(100% - 64px);
+  max-width: 1600px;
+  margin: 32px auto 60px;
 }
 
 .creator-panel,
@@ -395,5 +392,177 @@
 
   .export-panel summary {
     font-size: 21px;
+  }
+}
+/* =====================================================
+   FULL-WIDTH CREATOR LAYOUT
+   Keep this section at the bottom of creator.css
+   ===================================================== */
+
+.creator-layout {
+  display: block;
+  width: calc(100% - 64px);
+  max-width: 1600px;
+  margin: 32px auto 60px;
+}
+
+.creator-panel {
+  width: 100%;
+  max-width: none;
+  padding: 30px;
+}
+
+.preview-panel {
+  display: none;
+}
+
+/* Each main creator section */
+
+.creator-section {
+  width: 100%;
+  margin-bottom: 28px;
+  padding: 26px;
+
+  border: 1px solid var(--line);
+  border-radius: 18px;
+
+  background: #ffffff;
+}
+
+/* Activity title and instructions side by side */
+
+.creator-section:first-child {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(400px, 1.25fr);
+  gap: 18px 26px;
+}
+
+.creator-section:first-child h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.creator-section:first-child label {
+  margin-bottom: 0;
+}
+
+.creator-section:first-child textarea {
+  min-height: 58px;
+  height: 58px;
+}
+
+/* Matching-pair area */
+
+.pair-list {
+  width: 100%;
+}
+
+.pair-editor {
+  width: 100%;
+}
+
+.pair-sides {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+/* Make the contents inside each pair use the width better */
+
+.side-editor {
+  min-width: 0;
+}
+
+.side-editor label {
+  width: 100%;
+}
+
+/* Settings across the available width */
+
+.settings-section {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
+  gap: 18px 28px;
+
+  margin-top: 0;
+  padding-top: 26px;
+
+  border-top: 1px solid var(--line);
+}
+
+.settings-section h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.settings-section fieldset,
+.settings-section .toggle-grid {
+  margin: 0;
+}
+
+/* Action buttons */
+
+.creator-actions {
+  width: 100%;
+  margin-top: 20px;
+}
+
+/* Publish area */
+
+.export-panel {
+  width: 100%;
+  margin-top: 24px;
+  padding: 24px;
+
+  border: 1px solid var(--line);
+  border-radius: 18px;
+
+  background: #ffffff;
+}
+
+/* Tablet */
+
+@media (max-width: 1000px) {
+  .creator-layout {
+    width: calc(100% - 32px);
+  }
+
+  .creator-section:first-child {
+    grid-template-columns: 1fr;
+  }
+
+  .creator-section:first-child h2 {
+    grid-column: auto;
+  }
+
+  .settings-section {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-section h2 {
+    grid-column: auto;
+  }
+}
+
+/* Smartphone */
+
+@media (max-width: 620px) {
+  .creator-layout {
+    width: calc(100% - 16px);
+    margin-top: 14px;
+  }
+
+  .creator-panel {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .creator-section,
+  .export-panel {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .pair-sides {
+    grid-template-columns: 1fr;
   }
 }
