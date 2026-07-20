@@ -73,7 +73,7 @@
       download(safeName(activity.title, '.html'), html, 'text/html');
     },
     shareUrl(activity) {
-      const base = new URL('index.html', location.href);
+      const base = new URL('player.html', location.href);
       base.hash = `activity=${encodeActivity(activity)}`;
       return base.href;
     },
