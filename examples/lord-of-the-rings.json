@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "title": "Match the Lord of the Rings characters with their correct aliases",
+  "instructions": "Drag or tap to match each character with the correct alias.",
+  "feedbackMode": "check",
+  "allowRetry": true,
+  "allowSolution": true,
+  "pairs": [
+    {"id":"smeagol","left":{"text":"Smeagol","image":""},"right":{"text":"Gollum","image":""}},
+    {"id":"frodo","left":{"text":"Frodo","image":""},"right":{"text":"Mr. Underhill","image":""}},
+    {"id":"pippin","left":{"text":"Peregrin Took","image":""},"right":{"text":"Pippin","image":""}},
+    {"id":"sauron","left":{"text":"Sauron","image":""},"right":{"text":"The Lord of the Rings","image":""}},
+    {"id":"gandalf","left":{"text":"Gandalf","image":""},"right":{"text":"Mithrandir","image":""}},
+    {"id":"aragorn","left":{"text":"Aragorn","image":""},"right":{"text":"Elessar","image":""}}
+  ]
+}

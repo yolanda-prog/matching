@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Create interactive matching activities">
+  <title>Matching Activity Creator</title>
+  <link rel="stylesheet" href="css/shared.css">
+  <link rel="stylesheet" href="css/creator.css">
+  <link rel="stylesheet" href="css/player.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Teacher tool</p>
+      <h1>Matching Activity Creator</h1>
+    </div>
+    <a class="button button-secondary" href="index.html">Open player</a>
+  </header>
+
+  <main class="creator-layout">
+    <section class="creator-panel" aria-labelledby="settingsTitle">
+      <h2 id="settingsTitle">Activity settings</h2>
+      <label>Activity title
+        <input id="activityTitle" type="text" value="Match the pairs">
+      </label>
+      <label>Instructions
+        <textarea id="instructions" rows="3">Drag or tap to match each item with its partner.</textarea>
+      </label>
+      <fieldset>
+        <legend>Feedback</legend>
+        <label class="inline"><input type="radio" name="feedbackMode" value="check" checked> Check at the end</label>
+        <label class="inline"><input type="radio" name="feedbackMode" value="instant"> Instant feedback</label>
+      </fieldset>
+      <div class="toggle-grid">
+        <label class="inline"><input id="allowRetry" type="checkbox" checked> Show Retry</label>
+        <label class="inline"><input id="allowSolution" type="checkbox" checked> Show solution</label>
+      </div>
+
+      <div class="section-heading">
+        <div>
+          <h2>Matching pairs</h2>
+          <p>Add text, an image, or both on either side.</p>
+        </div>
+        <button id="addPair" class="button button-secondary" type="button">+ Add pair</button>
+      </div>
+      <div id="pairList" class="pair-list"></div>
+
+      <div class="creator-actions">
+        <button id="previewButton" class="button" type="button">Preview</button>
+        <button id="saveDraft" class="button button-secondary" type="button">Save draft</button>
+        <button id="loadDraft" class="button button-secondary" type="button">Load draft</button>
+      </div>
+
+      <details class="export-panel">
+        <summary>Export and share</summary>
+        <div class="export-grid">
+          <button id="downloadHtml" class="button" type="button">Download HTML</button>
+          <button id="downloadJson" class="button button-secondary" type="button">Download JSON</button>
+          <label class="button button-secondary file-button">Import JSON<input id="importJson" type="file" accept="application/json,.json" hidden></label>
+          <button id="makeLink" class="button button-secondary" type="button">Create share link</button>
+        </div>
+        <label>Shareable link
+          <textarea id="shareLink" rows="3" readonly></textarea>
+        </label>
+        <label>Embed code
+          <textarea id="embedCode" rows="4" readonly></textarea>
+        </label>
+        <div class="qr-wrap">
+          <img id="qrImage" alt="QR code for the activity" hidden>
+          <p id="shareNotice" class="notice"></p>
+        </div>
+      </details>
+    </section>
+
+    <section class="preview-panel" aria-labelledby="previewTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">Live learner view</p><h2 id="previewTitle">Preview</h2></div>
+      </div>
+      <div id="previewRoot" class="activity-card"></div>
+    </section>
+  </main>
+
+  <template id="pairTemplate">
+    <article class="pair-editor" draggable="true">
+      <div class="pair-editor-top">
+        <span class="drag-handle" aria-hidden="true">⋮⋮</span>
+        <strong class="pair-number"></strong>
+        <div class="pair-editor-buttons">
+          <button class="move-up icon-button" type="button" aria-label="Move pair up">↑</button>
+          <button class="move-down icon-button" type="button" aria-label="Move pair down">↓</button>
+          <button class="delete-pair icon-button danger" type="button" aria-label="Delete pair">×</button>
+        </div>
+      </div>
+      <div class="pair-sides">
+        <fieldset class="side-editor">
+          <legend>Left item</legend>
+          <label>Text <input class="left-text" type="text"></label>
+          <label>Image <input class="left-image" type="file" accept="image/*"></label>
+          <label>Image description <input class="left-alt" type="text" placeholder="Describe the image"></label>
+          <img class="left-preview image-preview" alt="" hidden>
+          <button class="remove-left-image text-button" type="button" hidden>Remove image</button>
+        </fieldset>
+        <fieldset class="side-editor">
+          <legend>Right item</legend>
+          <label>Text <input class="right-text" type="text"></label>
+          <label>Image <input class="right-image" type="file" accept="image/*"></label>
+          <label>Image description <input class="right-alt" type="text" placeholder="Describe the image"></label>
+          <img class="right-preview image-preview" alt="" hidden>
+          <button class="remove-right-image text-button" type="button" hidden>Remove image</button>
+        </fieldset>
+      </div>
+    </article>
+  </template>
+
+  <script src="js/matching-engine.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/creator.js"></script>
+</body>
+</html>
