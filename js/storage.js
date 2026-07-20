@@ -1,1 +1,0 @@
-(function(global){'use strict';const KEY='matching-activity-draft-v1';global.MatchingStorage={save(activity){localStorage.setItem(KEY,JSON.stringify(activity));},load(){try{return JSON.parse(localStorage.getItem(KEY));}catch(e){return null;}},clear(){localStorage.removeItem(KEY);}};})(window);
