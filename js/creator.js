@@ -1,189 +1,210 @@
-(function () {
-  'use strict';
+body.modal-open {
+  overflow: hidden;
+}
 
-  const $ = (selector) => document.querySelector(selector);
-  const list = $('#pairList');
-  const template = $('#pairTemplate');
-  let pairs = [];
-  let dragIndex = null;
+.creator-layout {
+  display: block;
+  width: min(1100px, calc(100% - 32px));
+}
 
-  function newPair(left = '', right = '') {
-    return {
-      id: MatchingCore.uid(),
-      left: { text: left, image: '', alt: '' },
-      right: { text: right, image: '', alt: '' }
-    };
+.creator-panel {
+  width: 100%;
+}
+
+.preview-panel {
+  display: none;
+}
+
+.creator-section {
+  margin-bottom: 34px;
+}
+
+.settings-section {
+  margin-top: 38px;
+  padding-top: 30px;
+  border-top: 1px solid var(--line);
+}
+
+/* Preview modal */
+
+.preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 2.5vh 2.5vw;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease;
+}
+
+.preview-modal[hidden] {
+  display: none;
+}
+
+.preview-modal.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.preview-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(18, 29, 48, 0.72);
+  backdrop-filter: blur(5px);
+}
+
+.preview-dialog {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  width: min(95vw, 1400px);
+  height: min(94vh, 1000px);
+
+  overflow: hidden;
+
+  border: 1px solid var(--line);
+  border-radius: 24px;
+
+  background: var(--surface);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.3);
+
+  transform: translateY(18px) scale(0.985);
+
+  transition: transform 0.18s ease;
+}
+
+.preview-modal.is-open .preview-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.preview-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 22px 28px;
+
+  border-bottom: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.preview-dialog-header h2 {
+  margin-bottom: 0;
+}
+
+.preview-dialog-header .eyebrow {
+  margin-bottom: 5px;
+}
+
+.preview-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  flex: 0 0 auto;
+
+  border: 0;
+  border-radius: 50%;
+
+  background: var(--soft);
+  color: var(--ink);
+
+  font-family: Arial, sans-serif;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.preview-close:hover {
+  background: #e4ebf4;
+}
+
+.preview-close:focus-visible {
+  outline: 4px solid rgba(23, 105, 224, 0.25);
+  outline-offset: 2px;
+}
+
+.preview-dialog-body {
+  flex: 1;
+  overflow: auto;
+
+  padding: 28px;
+
+  background: #eef3f9;
+}
+
+.preview-dialog-body .activity-card {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+}
+
+.preview-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+
+  padding: 18px 28px;
+
+  border-top: 1px solid var(--line);
+  background: #ffffff;
+}
+
+@media (max-width: 700px) {
+  .creator-layout {
+    width: calc(100% - 16px);
   }
 
-  function initialise() {
-    pairs = [newPair('Smeagol', 'Gollum'), newPair('Frodo', 'Mr. Underhill'), newPair('Gandalf', 'Mithrandir')];
-    renderPairs();
-    bind();
-    preview();
+  .preview-modal {
+    padding: 0;
   }
 
-  function bind() {
-    ['#activityTitle', '#instructions', '#allowRetry', '#allowSolution'].forEach((selector) => $(selector).addEventListener('input', preview));
-    document.querySelectorAll('input[name="feedbackMode"]').forEach((input) => input.addEventListener('change', preview));
-    $('#addPair').addEventListener('click', () => { pairs.push(newPair()); renderPairs(); preview(); });
-    $('#previewButton').addEventListener('click', preview);
-    $('#saveDraft').addEventListener('click', () => { MatchingStorage.save(collect()); alert('Draft saved in this browser.'); });
-    $('#loadDraft').addEventListener('click', () => {
-      const activity = MatchingStorage.load();
-      if (!activity) { alert('No saved draft was found.'); return; }
-      apply(activity);
-    });
-    $('#downloadJson').addEventListener('click', () => MatchingExport.downloadJson(collect()));
-    $('#downloadHtml').addEventListener('click', async () => {
-      try {
-        await MatchingExport.downloadHtml(collect());
-      } catch (error) {
-        alert('The standalone file could not be created. Open the creator through GitHub Pages or a local web server, then try again.');
-        console.error(error);
-      }
-    });
-    $('#importJson').addEventListener('change', importJson);
-    $('#makeLink').addEventListener('click', makeLink);
+  .preview-dialog {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+
+    border: 0;
+    border-radius: 0;
   }
 
-  function renderPairs() {
-    list.innerHTML = '';
-    pairs.forEach((pair, index) => {
-      const node = template.content.firstElementChild.cloneNode(true);
-      node.dataset.index = index;
-      node.querySelector('.pair-number').textContent = `Pair ${index + 1}`;
-      setSide(node, 'left', pair.left);
-      setSide(node, 'right', pair.right);
-
-      ['left', 'right'].forEach((side) => {
-        node.querySelector(`.${side}-text`).addEventListener('input', (event) => { pair[side].text = event.target.value; preview(); });
-        node.querySelector(`.${side}-alt`).addEventListener('input', (event) => { pair[side].alt = event.target.value; preview(); });
-        node.querySelector(`.${side}-image`).addEventListener('change', (event) => readImage(event.target.files[0], (data) => {
-          pair[side].image = data;
-          renderPairs();
-          preview();
-        }));
-        node.querySelector(`.remove-${side}-image`).addEventListener('click', () => {
-          pair[side].image = '';
-          renderPairs();
-          preview();
-        });
-      });
-
-      node.querySelector('.delete-pair').addEventListener('click', () => {
-        if (pairs.length <= 2) { alert('An activity needs at least two pairs.'); return; }
-        pairs.splice(index, 1);
-        renderPairs();
-        preview();
-      });
-      node.querySelector('.move-up').addEventListener('click', () => move(index, index - 1));
-      node.querySelector('.move-down').addEventListener('click', () => move(index, index + 1));
-      node.addEventListener('dragstart', () => { dragIndex = index; node.classList.add('dragging'); });
-      node.addEventListener('dragend', () => { node.classList.remove('dragging'); dragIndex = null; });
-      node.addEventListener('dragover', (event) => event.preventDefault());
-      node.addEventListener('drop', (event) => {
-        event.preventDefault();
-        if (dragIndex !== null && dragIndex !== index) move(dragIndex, index);
-        dragIndex = null;
-      });
-      list.appendChild(node);
-    });
+  .preview-dialog-header {
+    padding: 16px;
   }
 
-  function setSide(node, side, data) {
-    node.querySelector(`.${side}-text`).value = data.text || '';
-    node.querySelector(`.${side}-alt`).value = data.alt || '';
-    const image = node.querySelector(`.${side}-preview`);
-    const remove = node.querySelector(`.remove-${side}-image`);
-    if (data.image) {
-      image.src = data.image;
-      image.alt = data.alt || data.text || `${side} item preview`;
-      image.hidden = false;
-      remove.hidden = false;
-    }
+  .preview-dialog-header h2 {
+    font-size: 26px;
   }
 
-  function move(from, to) {
-    if (to < 0 || to >= pairs.length) return;
-    const [pair] = pairs.splice(from, 1);
-    pairs.splice(to, 0, pair);
-    renderPairs();
-    preview();
+  .preview-close {
+    width: 46px;
+    height: 46px;
+    font-size: 31px;
   }
 
-  function readImage(file, done) {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { alert('Please choose an image file.'); return; }
-    if (file.size > 3 * 1024 * 1024 && !confirm('This image is larger than 3 MB. It may make the exported file very large. Continue?')) return;
-    const reader = new FileReader();
-    reader.onload = () => done(reader.result);
-    reader.onerror = () => alert('The image could not be read.');
-    reader.readAsDataURL(file);
+  .preview-dialog-body {
+    padding: 12px;
   }
 
-  function collect() {
-    return MatchingCore.normaliseActivity({
-      title: $('#activityTitle').value,
-      instructions: $('#instructions').value,
-      feedbackMode: document.querySelector('input[name="feedbackMode"]:checked').value,
-      allowRetry: $('#allowRetry').checked,
-      allowSolution: $('#allowSolution').checked,
-      pairs
-    });
+  .preview-dialog-footer {
+    padding: 14px 16px;
   }
 
-  function apply(activity) {
-    const normalised = MatchingCore.normaliseActivity(activity);
-    if (normalised.pairs.length < 2) { alert('The activity must contain at least two complete pairs.'); return; }
-    $('#activityTitle').value = normalised.title;
-    $('#instructions').value = normalised.instructions;
-    document.querySelector(`input[name="feedbackMode"][value="${normalised.feedbackMode}"]`).checked = true;
-    $('#allowRetry').checked = normalised.allowRetry;
-    $('#allowSolution').checked = normalised.allowSolution;
-    pairs = normalised.pairs;
-    renderPairs();
-    preview();
+  .preview-dialog-footer .button {
+    width: 100%;
   }
-
-  function importJson(event) {
-    const file = event.target.files[0];
-    event.target.value = '';
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try { apply(JSON.parse(reader.result)); }
-      catch (error) { alert('This is not a valid matching activity JSON file.'); }
-    };
-    reader.readAsText(file);
-  }
-
-  function preview() {
-    const activity = collect();
-    const root = $('#previewRoot');
-    if (activity.pairs.length < 2) {
-      root.innerHTML = '<p>Add at least two complete pairs to preview the activity.</p>';
-      return;
-    }
-    new MatchingPlayer(root, activity);
-  }
-
-  function makeLink() {
-    const activity = collect();
-    if (activity.pairs.length < 2) { alert('Add at least two complete pairs.'); return; }
-    const url = MatchingExport.shareUrl(activity);
-    $('#shareLink').value = url;
-    $('#embedCode').value = `<iframe src="${url}" title="${activity.title.replace(/"/g, '&quot;')}" width="100%" height="720" style="border:0" loading="lazy"></iframe>`;
-    const qr = $('#qrImage');
-    const notice = $('#shareNotice');
-    if (url.length > 7000) {
-      qr.hidden = true;
-      notice.textContent = 'This activity is too large for a reliable share link. Download the standalone HTML file, upload it, and make a QR code from the hosted address.';
-    } else {
-      qr.src = `https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=${encodeURIComponent(url)}`;
-      qr.hidden = false;
-      notice.textContent = 'The QR preview uses an online QR service. Text-only activities create the most reliable share links.';
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', initialise);
-}());
+}
