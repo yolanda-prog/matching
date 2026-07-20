@@ -2,18 +2,18 @@
   'use strict';
 
   const DEFAULT_ACTIVITY = {
-    title: 'Match the Lord of the Rings characters with their aliases',
+    title: 'Match the number with the word',
     instructions: 'Drag an item, or select one item in each column, to make a pair.',
     feedbackMode: 'check',
     allowRetry: true,
     allowSolution: true,
     pairs: [
-      { id: '1', left: { text: 'Smeagol' }, right: { text: 'Gollum' } },
-      { id: '2', left: { text: 'Frodo' }, right: { text: 'Mr. Underhill' } },
-      { id: '3', left: { text: 'Peregrin Took' }, right: { text: 'Pippin' } },
-      { id: '4', left: { text: 'Sauron' }, right: { text: 'The Lord of the Rings' } },
-      { id: '5', left: { text: 'Gandalf' }, right: { text: 'Mithrandir' } },
-      { id: '6', left: { text: 'Aragorn' }, right: { text: 'Elessar' } }
+      { id: '1', left: { text: '1' }, right: { text: 'one' } },
+      { id: '2', left: { text: '2' }, right: { text: 'two' } },
+      { id: '3', left: { text: '3' }, right: { text: 'three' } },
+      { id: '4', left: { text: '4' }, right: { text: 'four' } },
+      { id: '5', left: { text: '5' }, right: { text: 'five' } },
+      { id: '6', left: { text: '6' }, right: { text: 'six' } }
     ]
   };
 
