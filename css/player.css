@@ -40,24 +40,24 @@
 
 /* Board */
 
+
 .match-board-scroll {
   width: 100%;
   overflow-x: auto;
-
   padding: 4px 4px 14px;
 }
 
 .match-board {
+  width: 100%;
+}
+
+.unmatched-grid {
   display: grid;
   grid-template-columns:
-    minmax(210px, 1fr)
-    minmax(360px, 1.3fr)
-    minmax(210px, 1fr);
+    minmax(0,1fr)
+    minmax(0,1fr);
 
-  align-items: start;
-  gap: clamp(16px, 2.5vw, 32px);
-
-  min-width: 850px;
+  gap: clamp(30px,6vw,80px);
 }
 
 .match-area {
@@ -68,6 +68,19 @@
   display: grid;
   align-content: start;
   gap: 16px;
+}
+
+.matched-area {
+  margin-top: 18px;
+}
+
+.matched-area[hidden] {
+  display:none;
+}
+
+.matched-pairs {
+  display:grid;
+  gap:16px;
 }
 
 /* Unmatched cards */
@@ -149,7 +162,7 @@
 }
 
 .match-item img,
-.puzzle-half img,
+.matched-half img,
 .result-content img {
   width: 78px;
   height: 68px;
@@ -170,190 +183,115 @@
 
 /* Connected centre area */
 
-.connected-area {
-  min-height: 160px;
-  padding: 14px;
+/* Matched rows */
 
-  border: 2px dashed #c9d8e6;
-  border-radius: 18px;
+.matched-pair{
+  position:relative;
 
-  background: #f7fafc;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+
+  width:100%;
+  min-height:92px;
+
+  padding:0;
+
+  border:0;
+  border-radius:15px;
+
+  background:none;
+
+  cursor:pointer;
+
+  filter:drop-shadow(
+    0 8px 16px rgba(0,0,0,.12)
+  );
+
+  transition:.18s;
 }
 
-.connected-placeholder {
-  margin: 42px 12px;
-
-  color: var(--muted);
-
-  font-size: 17px;
-  line-height: 1.5;
-  text-align: center;
+.matched-pair:hover{
+  transform:translateY(-2px);
 }
 
-.connected-placeholder[hidden] {
-  display: none;
+.matched-half{
+
+  position:relative;
+
+  display:flex;
+  align-items:center;
+  gap:16px;
+
+  min-height:92px;
+
+  padding:18px 22px;
+
+  border:2px solid #b9d6ee;
+
+  background:linear-gradient(
+    180deg,
+    #f2fbff,
+    #e8f5fa
+  );
 }
 
-.connected-pairs {
-  display: grid;
-  gap: 16px;
+.matched-left{
+
+  border-right:none;
+
+  border-radius:15px 0 0 15px;
 }
 
-/* Joined puzzle pair */
+.matched-right{
 
-.connected-pair {
-  display: grid;
-  grid-template-columns:
-    minmax(0, 1fr)
-    minmax(0, 1fr);
+  border-left:none;
 
-  width: 100%;
-  min-height: 92px;
-  padding: 0;
+  border-radius:0 15px 15px 0;
 
-  overflow: visible;
-
-  border: 0;
-  border-radius: 15px;
-
-  background: transparent;
-
-  color: var(--ink);
-
-  font-family:
-    "Century Gothic",
-    Arial,
-    sans-serif;
-
-  font-size: 21px;
-  line-height: 1.35;
-  text-align: left;
-
-  cursor: pointer;
-
-  filter:
-    drop-shadow(
-      0 7px 12px
-      rgba(27, 70, 108, 0.12)
-    );
-
-  transition:
-    transform 0.18s ease,
-    filter 0.18s ease;
+  padding-left:42px;
 }
 
-.connected-pair:not(.locked):hover {
-  transform: translateY(-2px);
+.matched-left::after{
 
-  filter:
-    drop-shadow(
-      0 10px 17px
-      rgba(27, 70, 108, 0.18)
-    );
+  content:"";
+
+  position:absolute;
+
+  top:50%;
+  right:-20px;
+
+  width:40px;
+  height:40px;
+
+  border-radius:50%;
+
+  border:2px solid #b9d6ee;
+
+  border-left:none;
+
+  background:#edfaff;
+
+  transform:translateY(-50%);
 }
 
-.connected-pair:focus-visible {
-  outline: 4px solid
-    rgba(23, 105, 224, 0.28);
+.matched-right::before{
 
-  outline-offset: 5px;
+  content:"";
+
+  position:absolute;
+
+  left:-1px;
+  top:50%;
+
+  width:24px;
+  height:44px;
+
+  background:white;
+
+  border-radius:0 22px 22px 0;
+
+  transform:translateY(-50%);
 }
-
-.connected-pair.locked {
-  cursor: default;
-}
-
-.puzzle-half {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  min-width: 0;
-  min-height: 92px;
-  padding: 16px 20px;
-
-  border: 2px solid #9dcee9;
-
-  background:
-    linear-gradient(
-      180deg,
-      #edfaff,
-      #def2f8
-    );
-}
-
-/* Left puzzle piece */
-
-.puzzle-left {
-  z-index: 2;
-
-  border-right-width: 0;
-  border-radius: 15px 0 0 15px;
-}
-
-/* Round puzzle tab */
-
-.puzzle-left::after {
-  content: "";
-
-  position: absolute;
-  z-index: 3;
-
-  top: 50%;
-  right: -17px;
-
-  width: 32px;
-  height: 32px;
-
-  border: 2px solid #9dcee9;
-  border-left: 0;
-  border-radius: 50%;
-
-  background: #e3f5fa;
-
-  transform: translateY(-50%);
-}
-
-/* Right puzzle piece */
-
-.puzzle-right {
-  z-index: 1;
-
-  padding-left: 30px;
-
-  border-left-width: 0;
-  border-radius: 0 15px 15px 0;
-}
-
-/* Subtle join guide */
-
-.puzzle-right::before {
-  content: "";
-
-  position: absolute;
-
-  top: 50%;
-  left: -1px;
-
-  width: 24px;
-  height: 40px;
-
-  border-radius: 0 22px 22px 0;
-
-  background: #f7fafc;
-
-  transform: translateY(-50%);
-}
-
-/* Keep the left tab above the notch */
-
-.puzzle-left::after {
-  box-shadow:
-    5px 0 0 -2px #e3f5fa;
-}
-
 /* Feedback */
 
 .status-message {
@@ -578,21 +516,21 @@
     font-size: 20px;
   }
 
-  .connected-pair {
+  .matched-pair {
     font-size: 18px;
   }
 
-  .puzzle-half {
+  .matched-half {
     min-height: 82px;
     padding: 12px 14px;
   }
 
-  .puzzle-right {
+  .matched-right {
     padding-left: 28px;
   }
 
   .match-item img,
-  .puzzle-half img {
+  .matched-half img {
     width: 64px;
     height: 58px;
   }
